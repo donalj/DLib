@@ -10,6 +10,7 @@
 
 #include <vector>
 #include <opencv2/core/core.hpp>
+#include <opencv2/core/types_c.h>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
 #include "Drawing.h"
@@ -97,67 +98,70 @@ void Drawing::drawCorrespondences(cv::Mat &image, const cv::Mat &img1,
     const std::vector<cv::KeyPoint> &kp2,
     const std::vector<int> &c1, const std::vector<int> &c2)
 {
-  int rows = img1.rows + img2.rows;
-  int cols = (img1.cols > img2.cols ? img1.cols : img2.cols);
+  //TODO : Fix this for openCV 4
+  // int rows = img1.rows + img2.rows;
+  // int cols = (img1.cols > img2.cols ? img1.cols : img2.cols);
   
-  cv::Mat aux1, aux2;
-  if(img1.channels() > 1)
-    cv::cvtColor(img1, aux1, CV_RGB2GRAY);
-  else
-    aux1 = img1.clone();
+  // cv::Mat aux1, aux2;
+  // if(img1.channels() > 1)
+  //   cv::cvtColor(img1, aux1, cv::COLOR_RGB2GRAY);
+  // else
+  //   aux1 = img1.clone();
   
-  if(img2.channels() > 1)
-    cv::cvtColor(img2, aux2, CV_RGB2GRAY);
-  else
-    aux2 = img2.clone();
+  // if(img2.channels() > 1)
+  //   cv::cvtColor(img2, aux2, cv::COLOR_RGB2GRAY);
+  // else
+  //   aux2 = img2.clone();
 
-  Drawing::drawKeyPoints(aux1, kp1);
-  Drawing::drawKeyPoints(aux2, kp2);
+  // Drawing::drawKeyPoints(aux1, kp1);
+  // Drawing::drawKeyPoints(aux2, kp2);
 
-  cv::Mat im = cv::Mat::zeros(rows, cols, CV_8UC1);
-  IplImage ipl_im = IplImage(im);
-  IplImage* ipl_ret = &ipl_im;
+  // cv::Mat im = cv::Mat::zeros(rows, cols, CV_8UC1);
+  // // IplImage ipl_im = IplImage(im);
+  // // IplImage* ipl_ret = &ipl_im;
 
-  CvRect roi;
-  roi.x = 0;
-  roi.y = 0;
-  roi.width = img1.cols;
-  roi.height = img1.rows;
-	
-  cvSetImageROI(ipl_ret, roi);
-  IplImage ipl_aux1 = IplImage(aux1);
-  cvCopy(&ipl_aux1, ipl_ret);
+  // // CvRect roi;
+  // // roi.x = 0;
+  // // roi.y = 0;
+  // // roi.width = img1.cols;
+  // // roi.height = img1.rows;
+	// Rect region_of_interest = Rect(0, 0, img1.cols, img1.rows);
+  // cv::Mat image_roi = im(roi);
+
+  // // cvSetImageROI(ipl_ret, roi);
+  // // IplImage ipl_aux1 = IplImage(aux1);
+  // // cvCopy(&ipl_aux1, ipl_ret);
   
-  roi.x = 0;
-  roi.y = img1.rows;
-  roi.width = img2.cols;
-  roi.height = img2.rows;
+  // roi.x = 0;
+  // roi.y = img1.rows;
+  // roi.width = img2.cols;
+  // roi.height = img2.rows;
 	
-  cvSetImageROI(ipl_ret, roi);
-  IplImage ipl_aux2 = IplImage(aux2);
-  cvCopy(&ipl_aux2, ipl_ret);
+  // cvSetImageROI(ipl_ret, roi);
+  // IplImage ipl_aux2 = IplImage(aux2);
+  // cvCopy(&ipl_aux2, ipl_ret);
 
-	cvResetImageROI(ipl_ret);
+	// cvResetImageROI(ipl_ret);
 
-	// draw correspondences
-	cv::cvtColor(im, image, CV_GRAY2RGB);
+	// // draw correspondences
+	// cv::cvtColor(im, image, cv::COLOR_GRAY2RGB);
 	
-	for(unsigned int i = 0; i < c1.size(); ++i)
-	{
-	  int mx = (int)kp1[ c1[i] ].pt.x;
-	  int my = (int)kp1[ c1[i] ].pt.y;
-	  int px = (int)kp2[ c2[i] ].pt.x;
-	  int py = (int)kp2[ c2[i] ].pt.y;
+	// for(unsigned int i = 0; i < c1.size(); ++i)
+	// {
+	//   int mx = (int)kp1[ c1[i] ].pt.x;
+	//   int my = (int)kp1[ c1[i] ].pt.y;
+	//   int px = (int)kp2[ c2[i] ].pt.x;
+	//   int py = (int)kp2[ c2[i] ].pt.y;
 	  
-	  py += img1.rows;
+	//   py += img1.rows;
 	  
-    CvScalar color = cvScalar( 
-      int(((double)rand()/((double)RAND_MAX + 1.0)) * 256.0),
-      int(((double)rand()/((double)RAND_MAX + 1.0)) * 256.0),
-      int(((double)rand()/((double)RAND_MAX + 1.0)) * 256.0));
+  //   CvScalar color = cvScalar( 
+  //     int(((double)rand()/((double)RAND_MAX + 1.0)) * 256.0),
+  //     int(((double)rand()/((double)RAND_MAX + 1.0)) * 256.0),
+  //     int(((double)rand()/((double)RAND_MAX + 1.0)) * 256.0));
 
-    cv::line(image, cvPoint(mx, my), cvPoint(px, py), color, 1);
-	}
+  //   cv::line(image, cvPoint(mx, my), cvPoint(px, py), color, 1);
+	// }
 }
 
 // ---------------------------------------------------------------------------
