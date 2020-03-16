@@ -10,7 +10,6 @@
 
 #include <vector>
 #include <opencv2/core/core.hpp>
-#include <opencv2/core/types_c.h>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
 #include "Drawing.h"
@@ -24,11 +23,11 @@ void Drawing::drawKeyPoints(cv::Mat &image,
     const std::vector<cv::KeyPoint> &keypoints,
     bool colorOctave, bool useCartesianAngle)
 {
-  CvScalar colors[4] = {
-    cvScalar(0, 0, 255),
-    cvScalar(0, 255, 0),
-    cvScalar(255, 0, 0),
-    cvScalar(255, 255, 255) 
+  cv::Scalar colors[4] = {
+    cv::Scalar(0, 0, 255),
+    cv::Scalar(0, 255, 0),
+    cv::Scalar(255, 0, 0),
+    cv::Scalar(255, 255, 255) 
   };
 
   const double PI = 3.14159265;
@@ -36,11 +35,9 @@ void Drawing::drawKeyPoints(cv::Mat &image,
   vector<cv::KeyPoint>::const_iterator it;
   for(it = keypoints.begin(); it != keypoints.end(); ++it)
   {
-    //float s = ((9.0f/1.2f) * it->size/10.0f) / 3.0f;
     float s = it->size / 2.f;
-    //if(s < 3.f) s = 3.f;
     
-    const CvScalar *color;
+    const cv::Scalar *color;
     if(!colorOctave || it->octave < 1 || it->octave > 3)
       color = &colors[3];
     else
@@ -49,7 +46,7 @@ void Drawing::drawKeyPoints(cv::Mat &image,
     int r1 = (int)(it->pt.y + 0.5);
     int c1 = (int)(it->pt.x + 0.5);
     
-    cv::circle(image, cvPoint(c1, r1), (int)s, *color, 1);
+    cv::circle(image, cv::Point(c1, r1), (int)s, *color, 1);
     
     if(it->angle >= 0)
     {
@@ -63,7 +60,7 @@ void Drawing::drawKeyPoints(cv::Mat &image,
       else
         r2 = (int)(s * sin(o) + it->pt.y + 0.5);
 
-      cv::line(image, cvPoint(c1, r1), cvPoint(c2, r2), *color);
+      cv::line(image, cv::Point(c1, r1), cv::Point(c2, r2), *color);
     }
   }
 }
@@ -98,70 +95,51 @@ void Drawing::drawCorrespondences(cv::Mat &image, const cv::Mat &img1,
     const std::vector<cv::KeyPoint> &kp2,
     const std::vector<int> &c1, const std::vector<int> &c2)
 {
-  //TODO : Fix this for openCV 4
-  // int rows = img1.rows + img2.rows;
-  // int cols = (img1.cols > img2.cols ? img1.cols : img2.cols);
+  int rows = img1.rows + img2.rows;
+  int cols = (img1.cols > img2.cols ? img1.cols : img2.cols);
   
-  // cv::Mat aux1, aux2;
-  // if(img1.channels() > 1)
-  //   cv::cvtColor(img1, aux1, cv::COLOR_RGB2GRAY);
-  // else
-  //   aux1 = img1.clone();
+  cv::Mat aux1, aux2;
+  if(img1.channels() > 1)
+    cv::cvtColor(img1, aux1, cv::COLOR_RGB2GRAY);
+  else
+    aux1 = img1.clone();
   
-  // if(img2.channels() > 1)
-  //   cv::cvtColor(img2, aux2, cv::COLOR_RGB2GRAY);
-  // else
-  //   aux2 = img2.clone();
+  if(img2.channels() > 1)
+    cv::cvtColor(img2, aux2, cv::COLOR_RGB2GRAY);
+  else
+    aux2 = img2.clone();
 
-  // Drawing::drawKeyPoints(aux1, kp1);
-  // Drawing::drawKeyPoints(aux2, kp2);
+  Drawing::drawKeyPoints(aux1, kp1);
+  Drawing::drawKeyPoints(aux2, kp2);
 
-  // cv::Mat im = cv::Mat::zeros(rows, cols, CV_8UC1);
-  // // IplImage ipl_im = IplImage(im);
-  // // IplImage* ipl_ret = &ipl_im;
+  cv::Mat im = cv::Mat::zeros(rows, cols, CV_8UC1);
 
-  // // CvRect roi;
-  // // roi.x = 0;
-  // // roi.y = 0;
-  // // roi.width = img1.cols;
-  // // roi.height = img1.rows;
-	// Rect region_of_interest = Rect(0, 0, img1.cols, img1.rows);
-  // cv::Mat image_roi = im(roi);
+	cv::Rect roi = cv::Rect(0, 0, img1.cols, img1.rows);
+  aux1.copyTo( im(roi) );
 
-  // // cvSetImageROI(ipl_ret, roi);
-  // // IplImage ipl_aux1 = IplImage(aux1);
-  // // cvCopy(&ipl_aux1, ipl_ret);
-  
-  // roi.x = 0;
-  // roi.y = img1.rows;
-  // roi.width = img2.cols;
-  // roi.height = img2.rows;
+  roi = cv::Rect(0, 0, img2.cols, img2.rows);
+  aux2.copyTo( im(roi) );
+
+
+	// draw correspondences
+	cv::cvtColor(im, image, cv::COLOR_GRAY2RGB);
 	
-  // cvSetImageROI(ipl_ret, roi);
-  // IplImage ipl_aux2 = IplImage(aux2);
-  // cvCopy(&ipl_aux2, ipl_ret);
-
-	// cvResetImageROI(ipl_ret);
-
-	// // draw correspondences
-	// cv::cvtColor(im, image, cv::COLOR_GRAY2RGB);
-	
-	// for(unsigned int i = 0; i < c1.size(); ++i)
-	// {
-	//   int mx = (int)kp1[ c1[i] ].pt.x;
-	//   int my = (int)kp1[ c1[i] ].pt.y;
-	//   int px = (int)kp2[ c2[i] ].pt.x;
-	//   int py = (int)kp2[ c2[i] ].pt.y;
+	for(unsigned int i = 0; i < c1.size(); ++i)
+	{
+	  int mx = (int)kp1[ c1[i] ].pt.x;
+	  int my = (int)kp1[ c1[i] ].pt.y;
+	  int px = (int)kp2[ c2[i] ].pt.x;
+	  int py = (int)kp2[ c2[i] ].pt.y;
 	  
-	//   py += img1.rows;
+	  py += img1.rows;
 	  
-  //   CvScalar color = cvScalar( 
-  //     int(((double)rand()/((double)RAND_MAX + 1.0)) * 256.0),
-  //     int(((double)rand()/((double)RAND_MAX + 1.0)) * 256.0),
-  //     int(((double)rand()/((double)RAND_MAX + 1.0)) * 256.0));
+    cv::Scalar color = cv::Scalar( 
+      int(((double)rand()/((double)RAND_MAX + 1.0)) * 256.0),
+      int(((double)rand()/((double)RAND_MAX + 1.0)) * 256.0),
+      int(((double)rand()/((double)RAND_MAX + 1.0)) * 256.0));
 
-  //   cv::line(image, cvPoint(mx, my), cvPoint(px, py), color, 1);
-	// }
+    cv::line(image, cv::Point(mx, my), cv::Point(px, py), color, 1);
+	}
 }
 
 // ---------------------------------------------------------------------------
@@ -210,19 +188,19 @@ void Drawing::drawReferenceSystem(cv::Mat &image, const cv::Mat &cRo,
   cv::projectPoints(cv::Mat(oP), cRo, cto, A, k, points2d);
   
   // draw axis
-  CvScalar bluez, greeny, redx;
+  cv::Scalar bluez, greeny, redx;
   
   if(image.channels() == 3 )
   {
-    bluez = cvScalar(255,0,0);
-    greeny = cvScalar(0,255,0);
-    redx = cvScalar(0,0,255);
+    bluez = cv::Scalar(255,0,0);
+    greeny = cv::Scalar(0,255,0);
+    redx = cv::Scalar(0,0,255);
   }
   else
   {
-    bluez = cvScalar(18,18,18);
-    greeny = cvScalar(182,182,182);
-    redx = cvScalar(120,120,120);
+    bluez = cv::Scalar(18,18,18);
+    greeny = cv::Scalar(182,182,182);
+    redx = cv::Scalar(120,120,120);
   }
 
   cv::line(image, points2d[0], points2d[1], redx, 2);
