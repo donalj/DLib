@@ -152,24 +152,24 @@ public:
   struct tEvent
   {
     int x, y;  // mouse coordinates
-    int event; // some CV_EVENT_* value (see below)
-    int flags; // flags composed of CV_EVENT_FLAG_* values
+    int event; // some cv::EVENT_* value (see below)
+    int flags; // flags composed of cv::EVENT_FLAG_* values
     
     tEvent(){}
     tEvent(int _x, int _y, int _event, int _flags)
       : x(_x), y(_y), event(_event), flags(_flags){}
     
     // Events defined by OpenCV
-    // CV_EVENT_LBUTTONDOWN;
-    // CV_EVENT_LBUTTONUP;
-    // CV_EVENT_LBUTTONDBLCLK;
-    // CV_EVENT_RBUTTONDOWN;
-    // CV_EVENT_RBUTTONUP;
-    // CV_EVENT_RBUTTONDBLCLK;
-    // CV_EVENT_MBUTTONDOWN;
-    // CV_EVENT_MBUTTONUP;
-    // CV_EVENT_MBUTTONDBLCLK;
-    // CV_EVENT_MOUSEMOVE;
+    // cv::EVENT_LBUTTONDOWN;
+    // cv::EVENT_LBUTTONUP;
+    // cv::EVENT_LBUTTONDBLCLK;
+    // cv::EVENT_RBUTTONDOWN;
+    // cv::EVENT_RBUTTONUP;
+    // cv::EVENT_RBUTTONDBLCLK;
+    // cv::EVENT_MBUTTONDOWN;
+    // cv::EVENT_MBUTTONUP;
+    // cv::EVENT_MBUTTONDBLCLK;
+    // cv::EVENT_MOUSEMOVE;
   };
 
 public:
