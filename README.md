@@ -1,3 +1,12 @@
+
+
+DLib for Jetson Nano
+====
+
+**Note**: This repo has been modified to compile and run on a Jetson Nano with OpenCV 4.1.1 
+
+The purpose of this fork is to allow [BAD SLAM](https://github.com/ETH3D/badslam) to be tested on the Jetson Nano
+
 DLib
 ====
 
