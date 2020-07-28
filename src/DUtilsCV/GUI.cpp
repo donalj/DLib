@@ -176,8 +176,7 @@ int GUI::showImageInfo(const cv::Mat &image, bool autosize,
 
 bool GUI::windowExists(const tWinHandler &hwnd)
 {
-  
-  return cv::getWindowProperty(hwnd.c_str(), cv::WND_PROP_AUTOSIZE) >= 0;
+  return cv::getWindowProperty(hwnd, cv::WND_PROP_AUTOSIZE) != -1;
 }
 
 // ---------------------------------------------------------------------------
